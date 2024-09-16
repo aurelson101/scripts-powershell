@@ -1,3 +1,8 @@
+#This script allows you to create a shared mailbox from exchange365. 
+#Tt also creates 2 groups Full and Send to add for user permissions. 
+#Cleaner and more useful than adding users directly to the mailboxes.
+#Dont forget to edit ouPath for your AD production.
+
 # Prompt the user to input the email address and group name
 $email = Read-Host "Enter the shared mailbox email address"
 $groupName = Read-Host "Enter the group name (e.g., ReceptionMailbox)"
@@ -6,10 +11,6 @@ $groupName = Read-Host "Enter the group name (e.g., ReceptionMailbox)"
 $ouPath = "OU=Shared-Email,OU=Groups,DC=exemple,DC=com"
 $emailAddress = "$email"
 $groupDescription = "Access to the shared mailbox $email"
-
-# Create security groups in the specified OU
-New-ADGroup -Name "Email-$groupName-Send" -GroupScope Universal -GroupCategory Security -Description $groupDescription -Path $ouPath -OtherAttributes @{mail = "SHR-SA-$emailAddress"}
-New-ADGroup -Name "Email-$groupName-Full" -GroupScope Universal -GroupCategory Security -Description $groupDescription -Path $ouPath -OtherAttributes @{mail = "SHR-FA-$emailAddress"}
 
 # Install the Exchange Online PowerShell module if not already installed
 if (!(Get-Module -ListAvailable -Name ExchangeOnlineManagement)) {
@@ -21,6 +22,10 @@ Import-Module ExchangeOnlineManagement
 
 # Connect to Exchange Online
 Connect-ExchangeOnline -Credential (Get-Credential)
+
+# Create security groups in the specified OU
+New-ADGroup -Name "Email-$groupName-Send" -GroupScope Universal -GroupCategory Security -Description $groupDescription -Path $ouPath -OtherAttributes @{mail = "SHR-SA-$emailAddress"}
+New-ADGroup -Name "Email-$groupName-Full" -GroupScope Universal -GroupCategory Security -Description $groupDescription -Path $ouPath -OtherAttributes @{mail = "SHR-FA-$emailAddress"}
 
 # Create the shared mailbox
 New-Mailbox -Shared -Name $groupName -DisplayName $groupName -PrimarySmtpAddress $emailAddress
