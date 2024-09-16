@@ -1,0 +1,26 @@
+#This script connects to Exchange Online, prompts for a mailbox email address,
+#and converts the specified user mailbox to a shared mailbox. It automatically
+#installs the ExchangeOnlineManagement module if it's not already installed.
+# Import the Exchange Online PowerShell module
+Import-Module ExchangeOnlineManagement
+
+# Connect to Exchange Online
+Connect-ExchangeOnline
+
+# Prompt for the mailbox email address
+$email = Read-Host -Prompt "Enter the email address of the mailbox to convert to shared"
+
+try {
+    # Convert the mailbox to a shared mailbox
+    Set-Mailbox -Identity $email -Type Shared
+
+    Write-Host "Successfully converted $email to a shared mailbox." -ForegroundColor Green
+}
+catch {
+    Write-Host "Failed to convert $email to a shared mailbox. Error: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+# Disconnect from Exchange Online
+Disconnect-ExchangeOnline -Confirm:$false
+
+Write-Host "Script execution completed." -ForegroundColor Cyan
