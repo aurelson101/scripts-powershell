@@ -33,5 +33,9 @@ New-Mailbox -Shared -Name $groupName -DisplayName $groupName -PrimarySmtpAddress
 # Enable message copies for "Send As" and "Send on Behalf" actions
 Set-Mailbox -Identity $emailAddress -MessageCopyForSentAsEnabled $true -MessageCopyForSendOnBehalfEnabled $true
 
+# Add permissions for the groups to the shared mailbox
+Add-MailboxPermission -Identity $emailAddress -User "Email-$groupName-Full" -AccessRights FullAccess
+Add-RecipientPermission -Identity $emailAddress -Trustee "Email-$groupName-Send" -AccessRights SendAs
+
 # Disconnect from Exchange Online
 Disconnect-ExchangeOnline -Confirm:$false
